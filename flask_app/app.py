@@ -1,7 +1,13 @@
 from flask import Flask, jsonify, request
 from faker import Faker
-from random import randint
+import random
 import uuid
+
+
+def get_fake_email(first_name: str, last_name: str, fake: Faker):
+    separator = random.choice(['.','-','_'])
+    domain = fake.free_email_domain()
+    return f"{first_name.lower()}{separator}{last_name.lower()}@{domain}"
 
 app = Flask(__name__)
 
@@ -13,13 +19,21 @@ def get_data():
         fake = Faker()
         data = []
         for _ in range(count):
+            first_name = fake.first_name()
+            last_name = fake.last_name()
             data.append({
                 "id": str(uuid.uuid4()),
-                "first_name": fake.first_name(),
-                "last_name": fake.last_name(),
+                "first_name": first_name,
+                "last_name": last_name,
                 "address": fake.address(),
-                "emails": [fake.free_email() for _ in range(randint(1, 3))],
-                "phones": [fake.basic_phone_number() for _ in range(randint(1, 3))],
+                "email": get_fake_email(first_name=first_name, last_name=last_name, fake=fake),
+                "phones": [fake.basic_phone_number() for _ in range(random.randint(1, 2))],
+                "orders": [{
+                    "item": uuid.uuid4(),
+                    "color": fake.color_name(),
+                    "cc_number": fake.credit_card_number(),
+                    "total": random.randint(500, 50000)/100
+                } for _ in range(random.randint(1, 4))]
             })
         return jsonify({
             "status": "success",
