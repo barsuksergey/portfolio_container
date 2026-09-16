@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build: ./flask_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./flask_app:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    restart: always
