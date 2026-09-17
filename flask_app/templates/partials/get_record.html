@@ -1,0 +1,22 @@
+<div id="json-container" class="mt-4 p-4 bg-gray-900 rounded-lg text-gray-100 font-mono text-sm overflow-x-auto shadow-inner">
+  <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-700">
+    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">JSON Payload</span>
+    <button 
+      hx-get="/get-record" 
+      hx-target="#json-container" 
+      hx-swap="outerHTML" 
+      class="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded transition">
+      Get New Record
+    </button>
+  </div>
+  <pre><code id="record-code" class="language-json">{{ record | tojson(indent=2) }}</code></pre>
+
+  <script>
+    (function() {
+      const codeBlock = document.getElementById('record-code');
+      if (codeBlock && typeof Prism !== 'undefined') {
+        Prism.highlightElement(codeBlock);
+      }
+    })();
+  </script>
+</div>

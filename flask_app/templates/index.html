@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake Record Viewer</title>
+  
+  <!-- Tailwind CSS via CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+  <!-- Prism.js Script for Syntax Highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
+  <!-- Prism.js CSS Theme for JSON syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen p-8">
+
+  <main class="max-w-2xl mx-auto space-y-6">
+    <header class="border-b border-gray-800 pb-4">
+      <h1 class="text-2xl font-bold tracking-tight">Random record generator</h1>
+    </header>
+    <!-- Initial embed of the record partial -->
+    {% include "partials/get_record.html" %}
+  </main>
+
+</body>
+</html>
