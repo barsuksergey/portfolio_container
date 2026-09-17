@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, request, render_template
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from faker import Faker
 import random
 import uuid
@@ -31,19 +33,28 @@ def get_fake_record():
 
 app = Flask(__name__)
 
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri="redis://redis:6379/1"  # Uses DB 1 (Airflow's Celery uses DB 0)
+)
+
 @app.route('/api/data', methods=['GET'])
+@limiter.limit("10 per minute")
 def get_data():
 
     try:  
         records = request.args.get('records', default=1, type=int)
-        data = []
-        for _ in range(records):
-            data.append(get_fake_record())
+        if records > 100:
+            return jsonify({
+                "status": "failure",
+                "error": "Maximum 100 records allowed"
+            }), 400
 
         return jsonify({
             "status": "success",
             "records_counr": records,
-            "data": data
+            "data": [get_fake_record() for _ in range(records)]
         }), 200
     
     except Exception as e:
