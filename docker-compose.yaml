@@ -1,7 +1,7 @@
 x-airflow-common:
   &airflow-common
-  image: apache/airflow:3.3.1
-  # build: .
+  # image: apache/airflow:3.3.1
+  build: .
   env_file:
     - .env
   environment:
@@ -18,6 +18,7 @@ x-airflow-common:
     AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET}
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    AIRFLOW_CONN_POSTGRES_SINK: postgresql://spark:${POSTGRES_PASSWORD_SPARK}@postgres_sink:5432/spark_sink
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -35,13 +36,31 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: airflow
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+  
+  postgres_sink:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: spark
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_SPARK}
+      POSTGRES_DB: spark_sink
+    ports:
+    # avoiding conflict with Airflow's metadata DB
+      - "5433:5432"
+    volumes:
+      - postgres-sink-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "spark"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -177,3 +196,4 @@ services:
 
 volumes:
   postgres-db-volume:
+  postgres-sink-volume:

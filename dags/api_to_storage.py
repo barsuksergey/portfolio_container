@@ -40,7 +40,7 @@ def fetch_data(stop_event) -> tuple:
         return []
 
 @dag(
-    dag_id="api_data_pipeline_flow",
+    dag_id="api_to_storage",
     start_date=datetime(2026, 9, 15),
     schedule=None,
     catchup=False,

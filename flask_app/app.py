@@ -24,7 +24,8 @@ def get_fake_record():
         "email": get_fake_email(first_name=first_name, last_name=last_name, fake=fake),
         "phones": [fake.basic_phone_number() for _ in range(random.randint(1, 2))],
         "orders": [{
-            "item": uuid.uuid4(),
+            "order_id": str(uuid.uuid4()),
+            "item_id": str(uuid.uuid4()),
             "color": fake.color_name(),
             "cc_number": fake.credit_card_number(),
             "total": random.randint(500, 50010)/100
@@ -41,7 +42,7 @@ limiter = Limiter(
 )
 
 @app.route('/api/data', methods=['GET'])
-@limiter.limit("10 per minute")
+# @limiter.limit("10 per minute")
 def get_data():
 
     # simulating latency
