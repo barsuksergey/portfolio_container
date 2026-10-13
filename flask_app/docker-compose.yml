@@ -4,7 +4,8 @@ services:
   flask_app:
     build: .
     ports:
-      - "5000:5000"
+    # to avoid colliding with Mac's AirPlay receiver
+      - "5001:5001"
     volumes:
       - .:/app
     environment:

@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from faker import Faker
+import time
 import random
 import uuid
 
@@ -26,7 +27,7 @@ def get_fake_record():
             "item": uuid.uuid4(),
             "color": fake.color_name(),
             "cc_number": fake.credit_card_number(),
-            "total": random.randint(500, 50000)/100
+            "total": random.randint(500, 50010)/100
         } for _ in range(random.randint(1, 4))]
     }
     return record
@@ -43,14 +44,12 @@ limiter = Limiter(
 @limiter.limit("10 per minute")
 def get_data():
 
+    # simulating latency
+    delay = round(random.uniform(1.0, 3.5), 2)
+    time.sleep(delay)
+
     try:  
         records = request.args.get('records', default=1, type=int)
-        if records > 100:
-            return jsonify({
-                "status": "failure",
-                "error": "Maximum 100 records allowed"
-            }), 400
-
         return jsonify({
             "status": "success",
             "records_counr": records,
@@ -63,7 +62,7 @@ def get_data():
             "error": str(e)
         }), 500
 
-@app.route("/get-record")
+@app.route("/")
 def record_route():
     data = get_fake_record()
     if request.headers.get("HX-Request"):
@@ -72,4 +71,4 @@ def record_route():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
